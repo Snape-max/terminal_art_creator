@@ -207,16 +207,16 @@ export default {
           // 根据透明度决定如何显示
           if (upperAlpha > 0 && lowerAlpha > 0) {
             // 上下像素均不透明
-            output += `\\x1b[48;2;${upperColor[0]};${upperColor[1]};${upperColor[2]}m\\x1b[38;2;${lowerColor[0]};${lowerColor[1]};${lowerColor[2]}m\\u2584\\x1b[0m`;
+            output += `\\x1b[48;2;${upperColor[0]};${upperColor[1]};${upperColor[2]}m\\x1b[38;2;${lowerColor[0]};${lowerColor[1]};${lowerColor[2]}m▄\\x1b[0m`;
           } else if (upperAlpha === 0 && lowerAlpha === 0) {
             // 上下像素均透明
-            output += "\\u0020";
+            output += " ";
           } else if (upperAlpha === 0) {
             // 上半像素透明
-            output += `\\x1b[38;2;${lowerColor[0]};${lowerColor[1]};${lowerColor[2]}m\\u2584\\x1b[0m`;
+            output += `\\x1b[38;2;${lowerColor[0]};${lowerColor[1]};${lowerColor[2]}m▄\\x1b[0m`;
           } else if (lowerAlpha === 0) {
             // 下半像素透明
-            output += `\\x1b[38;2;${upperColor[0]};${upperColor[1]};${upperColor[2]}m\\u2580\\x1b[0m`;
+            output += `\\x1b[38;2;${upperColor[0]};${upperColor[1]};${upperColor[2]}m▀\\x1b[0m`;
           }
         }
         output += "\\n"; // 换行
