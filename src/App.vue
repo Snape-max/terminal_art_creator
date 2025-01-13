@@ -52,8 +52,31 @@
                 清除
               </a-button>
             </a-popconfirm>
-
           </div>
+          <br>
+          <a-button type="primary" @click="handleClick">说明</a-button>
+          <a-drawer :width="400" :visible="drewVisible" @ok="handleOk" @cancel="handleCancel" unmountOnClose>
+            <template #title>
+              <h1>说明</h1>
+            </template>
+            <h2>原理</h2>
+            <p>
+              在Unicode字符中 \u2584 为 ▄ ，\u2580 为 ▀ ,配合终端控制字符便可显示出像素画。
+            </p>
+            <p>
+              本项目可快速用于快速制作终端程序logo，也可用于绘制像素画。
+            </p>
+            <h2>使用</h2>
+            <li>按住鼠标左键开始绘制</li>
+            <li>按住Ctrl鼠标经过的地方也可绘制</li>
+            <li>按住鼠标右键擦除</li>
+            <li>导出为终端字符画会将像素画转义的字符串写入剪贴板</li>
+            <li>导出为图片如字面意</li>
+            <li>擦除即清空画板</li>
+            <li>保存会将当前像素画保存到Localstorage(只有一张)</li>
+            <h2>Github</h2>
+            <a-link href="https://github.com/Snape-max/terminal_art_creator" icon>Snape-max/terminal_art_creator</a-link>
+          </a-drawer>
         </div>
         <!-- 右侧画布区域 -->
         <div class="canvas-container">
@@ -86,7 +109,8 @@ export default {
       canvasHeight: 16, // 默认画布高度
       selectedColor: '#000000', // 默认颜色
       pixelSize: 20, // 默认像素宽度
-      hasUnsavedChanges: false // 是否有未保存的更改
+      hasUnsavedChanges: false, // 是否有未保存的更改
+      drewVisible: false,
     };
   },
   methods: {
@@ -161,6 +185,16 @@ export default {
         console.error("PixelCanvas 组件未正确加载");
       }
     },
+    // 抽屉控件
+    handleClick() {
+      this.drewVisible = true
+    },
+    handleOk() {
+      this.drewVisible = false
+    },
+    handleCancel() {
+      this.drewVisible = false
+    }
   },
   mounted() {
     // 从 localStorage 加载画布内容
