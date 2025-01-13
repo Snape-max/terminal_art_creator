@@ -1,5 +1,7 @@
 <template>
   <a-layout>
+    <a-layout-header>
+    </a-layout-header>
     <a-layout-content>
       <div class="container">
         <!-- 左侧设置区域 -->
@@ -42,9 +44,15 @@
           </div>
           <!-- 保存和导出按钮 -->
           <div class="action-buttons">
-            <a-button @click="saveCanvas">保存</a-button>
-            <a-button @click="exportCanvas">导出</a-button>
-            <a-button @click="clearCanvas" status="danger">清除</a-button>
+            <a-button @click="saveCanvas" type="dashed">保存</a-button>
+            <a-button @click="exportCanvas" type="dashed">导出为图片</a-button>
+            <a-button @click="exportAsTerminalArt" type="dashed">导出为终端字符画</a-button>
+            <a-popconfirm content="确定要清空画布吗？" okText="Yes" cancelText="No" @ok="clearCanvas">
+              <a-button status="danger">
+                清除
+              </a-button>
+            </a-popconfirm>
+
           </div>
         </div>
         <!-- 右侧画布区域 -->
@@ -91,9 +99,10 @@ export default {
     // 保存画布内容到 localStorage
     saveCanvas() {
       const canvasData = JSON.stringify(this.$refs.PixelCanvas.grid);
+      // if (canvasData.length == 0) return;
       localStorage.setItem('pixelCanvas', canvasData);
       this.hasUnsavedChanges = false;
-      alert('画布已保存！');
+      this.$message.success('画布已保存！');
     },
     // 导出画布内容为图片
     exportCanvas() {
@@ -133,7 +142,25 @@ export default {
       } else {
         console.error('PixelCanvas 组件未正确加载');
       }
-    }
+    },
+    // 导出为终端艺术字符串
+    exportAsTerminalArt() {
+      if (this.$refs.PixelCanvas) {
+        const terminalArt = this.$refs.PixelCanvas.exportAsTerminalArt();
+
+        // 将结果复制到剪贴板
+        navigator.clipboard.writeText(terminalArt)
+          .then(() => {
+            this.$message.success("终端字符画已复制到剪贴板！");
+          })
+          .catch((err) => {
+            console.error("无法复制到剪贴板：", err);
+            this.$message.error("复制失败，请手动复制以下内容：\n\n" + terminalArt);
+          });
+      } else {
+        console.error("PixelCanvas 组件未正确加载");
+      }
+    },
   },
   mounted() {
     // 从 localStorage 加载画布内容
@@ -141,7 +168,13 @@ export default {
       if (this.$refs.PixelCanvas) {
         const savedCanvas = localStorage.getItem('pixelCanvas');
         if (savedCanvas) {
-          this.$refs.PixelCanvas.grid = JSON.parse(savedCanvas);
+          const grid = JSON.parse(savedCanvas);
+          this.$refs.PixelCanvas.grid = grid;
+
+          // 手动更新 canvasWidth 和 canvasHeight
+          this.canvasWidth = grid.length;
+          this.canvasHeight = grid[0].length;
+
         }
       }
     });
@@ -168,8 +201,7 @@ export default {
 <style>
 
 body {
-  background-color: #DFDBE5;
-  background-image: url("data:image/svg+xml,%3Csvg width='6' height='6' viewBox='0 0 6 6' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%239C92AC' fill-opacity='1' fill-rule='evenodd'%3E%3Cpath d='M5 0h1L0 6V5zM6 5v1H5z'/%3E%3C/g%3E%3C/svg%3E");
+  background-image: url("./assets/herringbone.png");
   
   user-select: none; /* 禁用文字选中 */
   -webkit-user-select: none; /* Safari */
@@ -185,7 +217,7 @@ body::before {
   left: 0;
   width: 100%;
   height: 100%;
-  background: rgba(255, 255, 255, 0); /* 半透明背景 */
+  background: rgba(119, 119, 119, 0.111); /* 半透明背景 */
   backdrop-filter: blur(1px); /* 毛玻璃效果 */
   z-index: -1; /* 置于底层 */
 }
